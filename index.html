@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application SOA avec ESB</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Bibliothèque jsPDF pour l'export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Architecture SOA avec ESB</h1>
+            <p>Application pédagogique - Méthode des Services avec Bus d'Entreprise</p>
+        </header>
+
+        <!-- Architecture Visuelle -->
+        <div class="architecture">
+            <!-- ESB Central -->
+            <div class="esb" id="esb">
+                <div class="esb-title">BUS ESB CENTRAL</div>
+                <div class="esb-messages" id="esb-messages">
+                    Prêt à router les messages...
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div class="services-grid">
+                <div class="service-module" id="service-gestion">
+                    <h3>Service Gestion Clients</h3>
+                    <div class="service-controls">
+                        <button class="pulse-button" onclick="toggleFormulaireClient()">Ajouter Client</button>
+                        <button onclick="appelerService('gestion', 'listerClients')">Lister Clients</button>
+                    </div>
+                    <div class="service-data" id="data-gestion">
+                        Aucune action effectuée
+                    </div>
+                </div>
+
+                <div class="service-module" id="service-ventes">
+                    <h3>Service Gestion Ventes</h3>
+                    <div class="service-controls">
+                        <button onclick="appelerService('ventes', 'creerVente')">Créer Vente</button>
+                        <button onclick="appelerService('ventes', 'historiqueVentes')">Historique</button>
+                    </div>
+                    <div class="service-data" id="data-ventes">
+                        Aucune vente enregistrée
+                    </div>
+                </div>
+
+                <div class="service-module" id="service-stock">
+                    <h3>Service Gestion Stock</h3>
+                    <div class="service-controls">
+                        <button onclick="appelerService('stock', 'verifierStock')">Vérifier Stock</button>
+                        <button onclick="appelerService('stock', 'majStock')">Mettre à Jour</button>
+                    </div>
+                    <div class="service-data" id="data-stock">
+                        Produit A: 50, Produit B: 30, Produit C: 20
+                    </div>
+                </div>
+
+                <div class="service-module" id="service-facturation">
+                    <h3>Service Facturation</h3>
+                    <div class="service-controls">
+                        <button onclick="appelerService('facturation', 'genererFacture')">Générer Facture</button>
+                        <button onclick="appelerService('facturation', 'facturesEnAttente')">Factures en Attente</button>
+                    </div>
+                    <div class="service-data" id="data-facturation">
+                        Aucune facture générée
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles Rapides -->
+        <div class="controls">
+            <h3>Actions Rapides</h3>
+            <div class="buttons">
+                <button class="pulse-button" onclick="toggleFormulaireClient()">Ajouter Client</button>
+                <button onclick="appelerService('gestion', 'listerClients')">Lister Clients</button>
+                <button onclick="runScenario('fullProcess')">Processus Complet</button>
+                <button onclick="reinitialiserSysteme()">Réinitialiser</button>
+            </div>
+        </div>
+
+        <!-- Processus Métier -->
+        <div class="business-process">
+            <h2>Processus Métier Complet</h2>
+            <div class="process-controls">
+                <button onclick="executerProcessusComplet()">Exécuter Processus Vente Complète</button>
+                <button onclick="reinitialiserSysteme()">Réinitialiser Système</button>
+            </div>
+            <div class="process-logs" id="process-logs">
+                Aucun processus exécuté...
+            </div>
+        </div>
+
+        <!-- Export PDF -->
+        <div class="export-section">
+            <h2>Export des Rapports PDF</h2>
+            <div class="export-buttons">
+                <button onclick="exporterServicePDF('gestion')">Rapport Clients</button>
+                <button onclick="exporterServicePDF('ventes')">Rapport Ventes</button>
+                <button onclick="exporterServicePDF('stock')">Rapport Stock</button>
+                <button onclick="exporterServicePDF('facturation')">Rapport Factures</button>
+                <button onclick="exporterLogsPDF()">Logs ESB</button>
+                <button onclick="exporterProcessusPDF()">Processus Complet</button>
+            </div>
+        </div>
+
+        <!-- Monitoring ESB -->
+        <div class="monitoring">
+            <h2>Monitoring ESB - Messages en Temps Réel</h2>
+            <div class="message-log" id="message-log">
+                <div class="log-entry">Système initialisé - ESB prêt à router les messages</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay et Formulaire Client -->
+    <div id="formulaire-overlay" class="formulaire-overlay"></div>
+
+    <div id="formulaire-client" class="formulaire-container">
+        <div class="formulaire-header">
+            <h3>Ajouter un Nouveau Client</h3>
+            <p>Remplissez les informations du client</p>
+        </div>
+        
+        <form id="client-form" class="formulaire-body" onsubmit="soumettreFormulaireClient(event)">
+            <div class="form-group required">
+                <label for="nom">Nom Complet</label>
+                <input type="text" id="nom" name="nom" required 
+                       placeholder="Ex: Jean Dupont">
+            </div>
+            
+            <div class="form-group required">
+                <label for="email">Adresse Email</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="Ex: jean.dupont@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="telephone">Téléphone</label>
+                <input type="tel" id="telephone" name="telephone" 
+                       placeholder="Ex: +33 1 23 45 67 89">
+            </div>
+            
+            <div class="form-group">
+                <label for="adresse">Adresse</label>
+                <textarea id="adresse" name="adresse" 
+                          placeholder="Ex: 123 Rue de la République, 75001 Paris"></textarea>
+            </div>
+            
+            <div class="formulaire-footer">
+                <button type="button" class="btn btn-secondary" onclick="annulerFormulaire()">
+                    Annuler
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Créer le Client
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
